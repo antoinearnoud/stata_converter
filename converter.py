@@ -19,22 +19,29 @@ class MyPanel(wx.Panel):
 
         self.row_obj_dict = {}
 
+        self.version = "v10"
+        self.version_encoding = "114"
+
         self.list_ctrl = wx.ListCtrl(
-            self, size=(-1, 200),
+            self, size=(-1, 150),
             style=wx.LC_REPORT | wx.BORDER_SUNKEN
         )
         self.list_ctrl.InsertColumn(0, 'File', width=200)
         self.list_ctrl.InsertColumn(1, 'Path', width=200)
-        self.list_ctrl.InsertColumn(2, 'Number Of Observations', width=200)
-        self.list_ctrl.InsertColumn(3, 'Number Of Variables', width=200)
+        self.list_ctrl.InsertColumn(2, 'Number Of Observations', width=180)
+        self.list_ctrl.InsertColumn(3, 'Number Of Variables', width=180)
 
         open_button = wx.Button(self, label='Choose File')
         open_button.Bind(wx.EVT_BUTTON, self.on_open)
         main_sizer.Add(open_button, 0, wx.ALL | wx.CENTER, 5)
-
         main_sizer.Add(self.list_ctrl, 0, wx.ALL | wx.EXPAND, 5)
 
-        convert_button = wx.Button(self, label='Convert to Stata 13')
+        self.choice =  wx.Choice(self, choices=["Stata 10 (v. 114)", "Stata 13 (v. 117)", "Stata 14 (v. 118)"])
+        #version_button.Bind(wx.EVT_BUTTON, self.on_convert)
+        self.choice.Bind(wx.EVT_CHOICE, self.onChoice)
+        main_sizer.Add(self.choice, 0, wx.ALL | wx.CENTER, 5)
+
+        convert_button = wx.Button(self, label='Convert')
         convert_button.Bind(wx.EVT_BUTTON, self.on_convert)
         main_sizer.Add(convert_button, 0, wx.ALL | wx.CENTER, 5)
 
@@ -46,20 +53,31 @@ class MyPanel(wx.Panel):
 
         self.SetSizer(main_sizer)
 
+    def onChoice(self, event):
+        #choice = self.choice.GetStringSelection()
+        choice = self.choice.GetSelection()
+        versions = ["v10", "v13", "v14"]
+        versions_encoding = [114, 117, 118]
+        self.version = versions[choice]
+        self.version_encoding = versions_encoding[choice]
+
     def on_convert(self, event):
         selection = self.list_ctrl.GetFocusedItem()
         nb_files = self.list_ctrl.GetItemCount()
+        ver = self.version
+        ver_encoding = self.version_encoding
+        if nb_files == 0: wx.MessageBox('No file selected.')
         for selection in range(0,nb_files):
             if selection >= 0:
                 pathname = self.row_obj_dict[selection]
-                newpath = os.path.join(os.path.splitext(pathname)[0] + "_v13.dta")
+                newpath = os.path.join(os.path.splitext(pathname)[0] + "_" + ver + ".dta")
                 #df.to_stata(os.path.join(os.path.dirname(pathname), "test.dta"))
                 if os.path.isfile(newpath):
                     dlg = wx.MessageDialog(None, "The file already exists on disk. Do you want to replace it?",'Updater',wx.YES_NO | wx.ICON_QUESTION)
                     result = dlg.ShowModal()
                     if result == wx.ID_YES:
                         df = pd.read_stata(pathname)
-                        df.to_stata(newpath, version = 117, write_index = False)
+                        df.to_stata(newpath, version = ver_encoding, write_index = False)
                         print("saving file to ", newpath)
                         #print(len(df))
                         #dlg = EditDialog(mp3)
@@ -106,8 +124,8 @@ class MyPanel(wx.Panel):
 
                 self.list_ctrl.InsertColumn(0, 'File', width=200)
                 self.list_ctrl.InsertColumn(1, 'Path', width=200)
-                self.list_ctrl.InsertColumn(2, 'Number Of Observations', width=200)
-                self.list_ctrl.InsertColumn(3, 'Number Of Variables', width=200)
+                self.list_ctrl.InsertColumn(2, 'Number Of Observations', width=180)
+                self.list_ctrl.InsertColumn(3, 'Number Of Variables', width=180)
                 # Proceed loading the file chosen by the user
                 pathname = fileDialog.GetPath()
                 filename = fileDialog.GetFilename()
