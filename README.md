@@ -25,3 +25,8 @@ To create the executable, run
 ```
 pyinstaller --onefile --windowed --icon="images\myicon.ico" --name converter.py
 ```
+
+The code of this program is hosted on github at
+```
+https://github.com/antoinearnoud/stata_converter
+```
