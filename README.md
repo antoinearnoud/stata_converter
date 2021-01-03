@@ -1,5 +1,5 @@
 # stata_converter
-This programs converts newer versions of Stata files into older versions. Note that a web-app version of the program is available at https://agile-river-33143.herokuapp.com/ . The web-app only allows to work on files smaller than 50 MB.
+This programs converts newer versions of Stata files into older versions. Note that a web-app version of the program is available at https://stata-converter.herokuapp.com/ . The web-app only allows to work on files smaller than 50 MB.
 
 
 The user needs to install the packages from `requirements.txt`. To do so, run
